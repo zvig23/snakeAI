@@ -19,8 +19,8 @@ Usage for AI agents
     To use with AI agents, you need to integrate the game with the AI agent. An
     example usage is:
 
-        >>> from snake-on-pygame import Game
-        >>> game = Game(player = "ROBOT",
+        >>> import snake-on-pygame
+        >>> game = snake-on-pygame.Game(player = "HUMAN",
                         board_size = board_size,
                         local_state = local_state,
                         relative_pos = RELATIVE_POS)

@@ -3,7 +3,7 @@ import random
 import pygame
 import tkinter as tk
 from tkinter import messagebox
-
+from autoPlayer import autoPlayer
 
 class cube(object):
     rows = 20
@@ -130,6 +130,7 @@ def drawGrid(w, rows, surface):
     x = 0
     y = 0
     m = 0
+
     for i in range(rows):
         if (i == 0):
             pygame.draw.rect(surface, (165, 42, 42), (x, y, sizeBtwn, sizeBtwn))
@@ -158,10 +159,11 @@ def drawGrid(w, rows, surface):
 
 
 def redrawWindow(surface):
-    global rows, width, s, snack
+    global rows, width, s, apple
     surface.fill((0, 0, 0))
+
     s.draw(surface)
-    snack.draw(surface)
+    apple.draw(surface)
     drawGrid(width, rows, surface)
     pygame.display.update()
 
@@ -190,14 +192,44 @@ def message_box(subject, content):
     except:
         pass
 
+def connect2AP():
+    global s, apple,board_walls
+    body_walls = []
+    for a in s.body:
+        body_walls.append((a.pos))
+    start = body_walls[0]
+    target = apple.pos
+    ap = autoPlayer()
+    body_no_head=body_walls[1:]
+    final_walls=set(body_no_head+list(board_walls))
+    ap.initBoard(final_walls,target,start)
+    print(ap.findBestPath())
+    return
+
+
+def init_board_walls():
+    global apple,board_walls
+    board_walls=set()
+    for i in range(0,20):
+        board_walls.add((0,i))
+        board_walls.add((19,i))
+        board_walls.add((i,0))
+        board_walls.add((i,19))
+
+    print(board_walls)
+    pass
+
 
 def main():
-    global width, rows, s, snack
+    global width, rows, s, apple,board_walls
+
     width = 500
     rows = 20
     win = pygame.display.set_mode((width, width))
     s = snake((255, 0, 0), (10, 10))
-    snack = cube(randomSnack(rows, s), color=(0, 255, 0))
+    board_walls=[]
+    init_board_walls()
+    apple = cube(randomSnack(rows, s), color=(0, 255, 0))
     flag = True
 
     clock = pygame.time.Clock()
@@ -205,28 +237,32 @@ def main():
     while flag:
         pygame.time.delay(50)
         clock.tick(5)
+        connect2AP()
+
+
+
         s.move()
-        if s.body[0].pos == snack.pos:
+        if s.body[0].pos == apple.pos:
             s.addCube()
-            snack = cube(randomSnack(rows, s), color=(0, 255, 0))
+            apple = cube(randomSnack(rows, s), color=(0, 255, 0))
 
 
 
         if s.body[0].pos[0] == 0 or s.body[0].pos[1] == 0 :
             print('Score: ', len(s.body))
-            message_box('You Lost!', 'your score is '+str(len(s.body)))
+            message_box('You Lost!', 'your score is '+str(len(s.body)-1))
             s.reset((10, 10))
             break
 
         if s.body[0].pos[0] == 19 or s.body[0].pos[1] == 19 :
             print('Score: ', len(s.body))
-            message_box('You Lost!', 'your score is '+str(len(s.body)))
+            message_box('You Lost!', 'your score is '+str(len(s.body)-1))
             s.reset((10, 10))
             break
 
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z: z.pos, s.body[x + 1:])):
-                print('Score: ', len(s.body))
+                print('Score: ', len(s.body)-1)
                 message_box('You Lost!', 'Play again...')
                 s.reset((10, 10))
                 break

@@ -6,22 +6,17 @@ from a_star_path_finding import AStar
 class autoPlayer(object):
 
     def __init__(self):
-        self.board = [[]]
         self.bestPath=[]
         self.walls=[]
-        self.head=self.walls[0]
         self.apple=()
+        self.start=()
 
-    def initBoard(self,board,walls,target):
-        self.board=board
-        i=0
-        j=0
-        while i<20:
-            while j<20:
-                if board[i][j]==1:
-                    self.walls.append((i,j))
-                if board[i][j] == 2:
-                    self.apple=(i, j)
+    def initBoard(self,walls,target,start):
+        self.apple=target
+        self.start=start
+        self.walls=walls
+
+
         return
 
     def findBestPath(self):
@@ -34,9 +29,10 @@ class autoPlayer(object):
         #     if i == 1 or i == 19:
         #         walls.append((i, j))
         # # print (walls)
-        a.init_grid(20, 20, walls, self.head, (5, 5))
+        a.init_grid(20, 20, walls, self.start, self.apple)
         path = a.solve()
         self.bestPath= path
+        return path
 
     def getNextDirection(self,headPos):
         nextStage=self.bestPath.pop()
@@ -56,5 +52,3 @@ class autoPlayer(object):
         elif nextStape==(0,1):
             return pygame.K_DOWN
 
-ai = autoPlayer()
-print(ai.findBestPath())
