@@ -1,9 +1,12 @@
-import math
 import random
 import pygame
 import tkinter as tk
 from tkinter import messagebox
+import math
+
 from autoPlayer import autoPlayer
+
+global aiMoves
 
 class cube(object):
     rows = 20
@@ -47,7 +50,9 @@ class snake(object):
         self.dirnx = 0
         self.dirny = 1
 
-    def move(self):
+    def move(self,ap):
+        global aiMoves,autoPlayer
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -130,7 +135,6 @@ def drawGrid(w, rows, surface):
     x = 0
     y = 0
     m = 0
-
     for i in range(rows):
         if (i == 0):
             pygame.draw.rect(surface, (165, 42, 42), (x, y, sizeBtwn, sizeBtwn))
@@ -159,11 +163,10 @@ def drawGrid(w, rows, surface):
 
 
 def redrawWindow(surface):
-    global rows, width, s, apple
+    global rows, width, s, snack
     surface.fill((0, 0, 0))
-
     s.draw(surface)
-    apple.draw(surface)
+    snack.draw(surface)
     drawGrid(width, rows, surface)
     pygame.display.update()
 
@@ -192,19 +195,21 @@ def message_box(subject, content):
     except:
         pass
 
+
+
 def connect2AP():
-    global s, apple,board_walls
+    global s, snack,board_walls, aiMoves,ap
     body_walls = []
     for a in s.body:
         body_walls.append((a.pos))
     start = body_walls[0]
-    target = apple.pos
+    target = snack.pos
     ap = autoPlayer()
     body_no_head=body_walls[1:]
     final_walls=set(body_no_head+list(board_walls))
     ap.initBoard(final_walls,target,start)
-    print(ap.findBestPath())
-    return
+    aiMoves=ap.findBestPath()
+    return aiMoves
 
 
 def init_board_walls():
@@ -216,12 +221,11 @@ def init_board_walls():
         board_walls.add((i,0))
         board_walls.add((i,19))
 
-    print(board_walls)
     pass
 
 
 def main():
-    global width, rows, s, apple,board_walls
+    global width, rows, s,board_walls,aiMoves,snack,ap
 
     width = 500
     rows = 20
@@ -229,22 +233,22 @@ def main():
     s = snake((255, 0, 0), (10, 10))
     board_walls=[]
     init_board_walls()
-    apple = cube(randomSnack(rows, s), color=(0, 255, 0))
+    snack = cube(randomSnack(rows, s), color=(0, 255, 0))
     flag = True
 
     clock = pygame.time.Clock()
-
+    aiMoves=[]
+    aiMoves = connect2AP()
     while flag:
-        pygame.time.delay(50)
+        pygame.time.delay(500)
         clock.tick(5)
-        connect2AP()
+        s.move(ap)
 
 
 
-        s.move()
-        if s.body[0].pos == apple.pos:
+        if s.body[0].pos == snack.pos:
             s.addCube()
-            apple = cube(randomSnack(rows, s), color=(0, 255, 0))
+            snack = cube(randomSnack(rows, s), color=(0, 255, 0))
 
 
 

@@ -1,8 +1,8 @@
-import math
 import random
 import pygame
 import tkinter as tk
 from tkinter import messagebox
+import math
 
 
 class cube(object):
@@ -201,6 +201,7 @@ def main():
     flag = True
 
     clock = pygame.time.Clock()
+
 
     while flag:
         pygame.time.delay(50)

@@ -15,6 +15,7 @@ class autoPlayer(object):
         self.apple=target
         self.start=start
         self.walls=walls
+        self.path=[]
 
 
         return
@@ -29,26 +30,42 @@ class autoPlayer(object):
         #     if i == 1 or i == 19:
         #         walls.append((i, j))
         # # print (walls)
-        a.init_grid(20, 20, walls, self.start, self.apple)
-        path = a.solve()
-        self.bestPath= path
+        # a.init_grid(20, 20, walls, self.start, self.apple)
+        # path = a.solve()
+        # self.bestPath= path
+        path = [pygame.K_UP,pygame.K_LEFT
+            ,pygame.K_UP,pygame.K_LEFT
+            ,pygame.K_UP,pygame.K_LEFT
+            ,pygame.K_UP,pygame.K_LEFT]
+        self.path=path
         return path
 
-    def getNextDirection(self,headPos):
-        nextStage=self.bestPath.pop()
-        nextStape=\
-            (self.head()[0]-nextStage()[0],
-             self.head()[1]-nextStage()[1])
-
-        if nextStape==(-1,0):
-            return pygame.K_LEFT
-
-        elif nextStape==(1,0):
-            return pygame.K_RIGHT
-
-        elif nextStape==(0,-1):
-            return pygame.K_UP
-
-        elif nextStape==(0,1):
-            return pygame.K_DOWN
+    def getNextMove(self,lastMove):
+        if len(self.path) == 0:
+            print("def")
+            return 273
+        if(lastMove==1):
+            pygame.K_LEFT
+        if(lastMove==2):
+            pygame.K_UP
+        #
+        # print(self.path)
+        # nextStage=self.path.pop()
+        # print(nextStage)
+        # return nextStage
+        # nextStape=\
+        #     (self.head()[0]-nextStage()[0],
+        #      self.head()[1]-nextStage()[1])
+        #
+        # if nextStape==(-1,0):
+        #     return pygame.K_LEFT
+        #
+        # elif nextStape==(1,0):
+        #     return pygame.K_RIGHT
+        #
+        # elif nextStape==(0,-1):
+        #     return pygame.K_UP
+        #
+        # elif nextStape==(0,1):
+        #     return pygame.K_DOWN
 
