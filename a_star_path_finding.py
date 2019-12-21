@@ -21,6 +21,9 @@ class Cell(object):
         self.h = 0
         self.f = 0
 
+    def __lt__(self, other):
+        return self.f < other.f
+
 
 class AStar(object):
     def __init__(self):
@@ -62,7 +65,7 @@ class AStar(object):
 
         @returns heuristic value H
         """
-        return 10 * (1/(abs(cell.x - self.end.x)+1) + 1/(abs(cell.y - self.end.y)+1))
+        return 10 * (1 / (abs(cell.x - self.end.x) + 1) + 1 / (abs(cell.y - self.end.y) + 1))
 
     def get_cell(self, x, y):
         """Returns a cell from the cells list.
@@ -82,14 +85,14 @@ class AStar(object):
         @returns adjacent cells list.
         """
         cells = []
-        if cell.x < self.grid_width-1:
-            cells.append(self.get_cell(cell.x+1, cell.y))
+        if cell.x < self.grid_width - 1:
+            cells.append(self.get_cell(cell.x + 1, cell.y))
         if cell.y > 0:
-            cells.append(self.get_cell(cell.x, cell.y-1))
+            cells.append(self.get_cell(cell.x, cell.y - 1))
         if cell.x > 0:
-            cells.append(self.get_cell(cell.x-1, cell.y))
-        if cell.y < self.grid_height-1:
-            cells.append(self.get_cell(cell.x, cell.y+1))
+            cells.append(self.get_cell(cell.x - 1, cell.y))
+        if cell.y < self.grid_height - 1:
+            cells.append(self.get_cell(cell.x, cell.y + 1))
         return cells
 
     def get_path(self):
@@ -152,12 +155,12 @@ class Test():
 
     def test_maze(self):
         a = AStar()
-        walls =[]# [(0, 5), (1, 0), (1, 1), (1, 5), (2, 3),
-                # (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1)]
-        for i in range(0,20):
-            for j in range(0,20):
-                if j==1 or j==19:
-                    walls.append((i,j))
+        walls = []  # [(0, 5), (1, 0), (1, 1), (1, 5), (2, 3),
+        # (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1)]
+        for i in range(0, 20):
+            for j in range(0, 20):
+                if j == 1 or j == 19:
+                    walls.append((i, j))
             if i == 1 or i == 19:
                 walls.append((i, j))
         a.init_grid(20, 20, walls, (1, 1), (5, 5))
@@ -169,7 +172,7 @@ class Test():
         walls = ()
         a.init_grid(6, 6, walls, (0, 0), (5, 5))
         path = a.solve()
-        return (len(path)== 11)
+        return (len(path) == 11)
 
     def test_maze_no_solution(self):
         a = AStar()
@@ -178,7 +181,7 @@ class Test():
         a.init_grid(6, 6, walls, (0, 0), (5, 5))
         return (a.solve())
 
+
 if __name__ == '__main__':
     test = Test()
-    print (test.test_maze())
-
+    print(test.test_maze())
