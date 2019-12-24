@@ -1,6 +1,7 @@
 import pygame
 
 from a_star_path_finding import AStar
+from qLearning import qLearning
 
 
 class AutoPlayer:
@@ -10,7 +11,6 @@ class AutoPlayer:
         self.walls = None
         self.apple = None
         self.start = None
-        self.path = None
 
     def initBoard(self, walls, target, start):
         self.apple = target
@@ -18,12 +18,21 @@ class AutoPlayer:
         self.walls = walls
         return
 
+    def connet_Astar(self):
+        a_star = AStar()
+        a_star.init_grid(20, 20, self.walls, self.start, self.apple)
+        path_Astar = a_star.solve()
+        self.bestPath = path_Astar
+        return path_Astar
+
+    def connect_Qlearning(self):
+        q_learning = qLearning(20, self.walls, self.start, self.apple)
+        path_qlearning = q_learning.getPath()
+        print(path_qlearning)
+        return path_qlearning
+
     def find_next_step(self):
-        a = AStar()
-        a.init_grid(20, 20, self.walls, self.start, self.apple)
-        path = a.solve()
-        self.bestPath = path
-        print(path)
+        path = self.connet_Astar()
         if path is not None:
             if path[1][0] < self.start[0]:
                 return 1

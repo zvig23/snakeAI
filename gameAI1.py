@@ -211,6 +211,7 @@ def set_snake_body_as_walls():
 
 def connectAI():
     global s, apple, board_walls
+
     body_walls = set_snake_body_as_walls()
     start = body_walls[0]
     target = apple.pos
@@ -218,8 +219,8 @@ def connectAI():
     body_walls = body_walls[1:]
     body_walls.extend(board_walls)
     ap.initBoard(body_walls, target, start)
+    #ap.connect_Qlearning()
     move_pos = ap.find_next_step()
-
     if move_pos != None:
         return move_pos
 
@@ -282,4 +283,3 @@ def main():
 
 
 main()
-
