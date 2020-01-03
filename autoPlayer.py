@@ -2,6 +2,7 @@ import pygame
 
 from a_star_path_finding import AStar
 from qLearning import qLearning
+from hamilthon import hamilton_solver
 
 
 class AutoPlayer:
@@ -31,8 +32,15 @@ class AutoPlayer:
         print(path_qlearning)
         return path_qlearning
 
+    def connect_Hamilton(self):
+        hamilton = hamilton_solver(20, self.walls, self.start, self.apple)
+        path_qlearning = hamilton.getPath()
+        print(path_qlearning)
+        return path_qlearning
+
     def find_next_step(self):
-        path = self.connet_Astar()
+        path = self.connect_Hamilton()
+        print(path)
         if path is not None:
             if path[1][0] < self.start[0]:
                 return 1
