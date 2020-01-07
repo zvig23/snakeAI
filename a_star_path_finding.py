@@ -118,10 +118,6 @@ class AStar(object):
         adj.f = adj.h + adj.g
 
     def solve(self):
-        """Solve maze, find path to ending cell.
-
-        @returns path or None if not found.
-        """
         # add starting cell to open heap queue
         heapq.heappush(self.opened, (self.start.f, self.start))
         while len(self.opened):
@@ -148,7 +144,7 @@ class AStar(object):
                         heapq.heappush(self.opened, (adj_cell.f, adj_cell))
 
 
-class Test():
+class Test:
 
     def __init__(self):
         pass
@@ -172,14 +168,14 @@ class Test():
         walls = ()
         a.init_grid(6, 6, walls, (0, 0), (5, 5))
         path = a.solve()
-        return (len(path) == 11)
+        return len(path) == 11
 
     def test_maze_no_solution(self):
         a = AStar()
         walls = ((0, 5), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
                  (2, 3), (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1))
         a.init_grid(6, 6, walls, (0, 0), (5, 5))
-        return (a.solve())
+        return a.solve()
 
 
 if __name__ == '__main__':
