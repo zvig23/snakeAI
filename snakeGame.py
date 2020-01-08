@@ -1,7 +1,6 @@
 import random
 import pygame
-import tkinter as tk
-from tkinter import messagebox
+
 from autoPlayer import AutoPlayer
 
 from kivy.uix.label import Label
