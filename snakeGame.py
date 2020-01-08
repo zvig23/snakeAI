@@ -227,17 +227,6 @@ def random_snack(rows, item):
     return (x, y)
 
 
-def message_box(subject, content):
-    root = tk.Tk()
-    root.attributes("-topmost", True)
-    root.withdraw()
-    messagebox.showinfo(subject, content)
-    try:
-        root.destroy()
-    except:
-        pass
-
-
 def set_snake_body_as_walls():
     body_walls = []
     for a in s.body:
@@ -258,7 +247,9 @@ def connect_ai_a_start():
     if move_pos is not None:
         return move_pos
 
-
+'''
+conncet to q_learning AI and get path 
+'''
 def connect_ai():
     move_pos = ap.find_next_step()
     if move_pos is not None:
@@ -274,7 +265,9 @@ def set_board_walls():
         board_walls.append((i, 19))
     return board_walls
 
-
+'''
+run the game as A-star AI player 
+'''
 def run_a_star_game():
     global width, rows, s, apple, board_walls, ap
     width = 500
@@ -305,7 +298,9 @@ def run_a_star_game():
     pygame.quit()
     #exit()
 
-
+'''
+run the game as q_learning AI machine
+'''
 def run_q_learning_game():
     global width, rows, s, apple, board_walls, ap
     width = 500
@@ -353,7 +348,9 @@ def run_q_learning_game():
     pygame.quit()
     #exit()
 
-
+'''
+run the game as human player 
+'''
 def run_human_game():
     global width, rows, s, apple, board_walls, ap
     width = 500
@@ -382,7 +379,9 @@ def run_human_game():
     pygame.quit()
     #exit()
 
-
+'''
+pop up windwos with the results
+'''
 def show_result(score, player):
     show_content = player + ' score :' + str(score)
     pop_win = Popup(title="score", size_hint=(None, None), size=(400, 400))
@@ -391,6 +390,10 @@ def show_result(score, player):
     pass
 
 
+'''
+check if the game is ended 
+and call the function that pop up windwos with the results
+'''
 def check_for_end_game(s, player):
     if s.body[0].pos[0] == 0 or s.body[0].pos[1] == 0:
         print('Score: ', len(s.body))
@@ -413,7 +416,10 @@ def check_for_end_game(s, player):
             return True
     return False
 
-
+'''
+recive wich game to start 
+and call the right function
+'''
 def start_game(game):
     if game == "a_star":
         run_a_star_game()

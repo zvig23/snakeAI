@@ -10,19 +10,27 @@ class MyApp(App):
     def build(self):
         return MyGrid()
 
-
+'''
+function to start the game as Ai using A start algorithm
+'''
 def a_star_play(instance):
     Game.start_game("a_star")
 
-
+'''
+function to start the game as Ai using Q learning machine
+'''
 def q_learing_play(instance):
     Game.start_game("q_learning")
 
-
+'''
+function to start the game as user play
+'''
 def human_play(instance):
     Game.start_game("human")
 
-
+'''
+layout grid with define buttons to activate functions
+'''
 class MyGrid(GridLayout):
     def __init__(self, **kwargs):
         super(MyGrid, self).__init__(**kwargs)

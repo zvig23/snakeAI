@@ -1,8 +1,9 @@
 from a_star_path_finding import AStar
 from qLearning import QLearning
-from hamilthon import hamilton_solver
 
-
+'''
+AutoPlayer class that choose wich algorithm to choose from
+'''
 class AutoPlayer:
 
     def __init__(self):
@@ -16,24 +17,26 @@ class AutoPlayer:
         self.start = start
         self.walls = walls
         return
-
+    '''
+    connect to A star Ai , and recive path 
+    '''
     def connect_a_star(self):
         a_star = AStar()
         a_star.init_grid(20, 20, self.walls, self.start, self.apple)
         path_a_star = a_star.solve()
         self.bestPath = path_a_star
         return path_a_star
-
+    '''
+    connect to q_learning , and recive path 
+    '''
     def connect_q_learning(self):
         q_learning = QLearning(20, self.walls, self.start, self.apple)
         path_q__learning = q_learning.get_path()
         self.bestPath = path_q__learning
 
-    def connect_hamilton(self):
-        hamilton = hamilton_solver(20, self.walls, self.start, self.apple)
-        path = hamilton.getPath()
-        self.bestPath = path[1:]
-
+    '''
+    function to get the next step from the q_learning result 
+    '''
     def find_next_step(self):
         path = None
         if len(self.bestPath) != 0:
