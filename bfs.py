@@ -1,4 +1,5 @@
 import heapq
+import time
 
 
 class Cell(object):
@@ -17,7 +18,7 @@ class Cell(object):
         self.x = x
         self.y = y
         self.parent = None
-        self.g = 1
+        self.g = 0
         self.h = 0
         self.f = 0
 
@@ -25,12 +26,12 @@ class Cell(object):
         return self.f < other.f
 
 
-class AStar(object):
+class BFS(object):
     def __init__(self):
         # open list
         self.opened = []
         self.total_expended = set()
-        self.total_generated = 1
+        self.total_generated = 0
         heapq.heapify(self.opened)
         # visited cells list
         self.closed = set()
@@ -38,6 +39,7 @@ class AStar(object):
         self.cells = []
         self.grid_height = None
         self.grid_width = None
+        self.d = 2
 
     def init_grid(self, width, height, walls, start, end):
         """Prepare grid cells, walls.
@@ -67,7 +69,7 @@ class AStar(object):
 
         @returns heuristic value H
         """
-        return (abs(cell.x - self.end.x)**2 + abs(cell.y - self.end.y)**2)**0.5
+        return 10 * (1 / (abs(cell.x - self.end.x) + 1) + 1 / (abs(cell.y - self.end.y) + 1))
 
     def get_cell(self, x, y):
         """Returns a cell from the cells list.
@@ -115,7 +117,7 @@ class AStar(object):
         @param cell current cell being processed
         """
         adj.g = cell.g + 1
-        adj.h = self.get_heuristic(adj)
+        adj.h = time.time()
         adj.parent = cell
         adj.f = adj.h + adj.g
 
@@ -139,8 +141,9 @@ class AStar(object):
                         # if adj cell in open list, check if current path is
                         # better than the one previously found
                         # for this adj cell.
-                        self.total_generated +=1
                         if adj_cell.f > cell.f :
+                            self.total_generated += 1
+
                             self.update_cell(adj_cell, cell)
                     else:
                         self.update_cell(adj_cell, cell)
@@ -148,41 +151,3 @@ class AStar(object):
                         self.total_expended.update(self.opened)
                         heapq.heappush(self.opened, (adj_cell.f, adj_cell))
 
-
-class Test:
-
-    def __init__(self):
-        pass
-
-    def test_maze(self):
-        a = AStar()
-        walls = []  # [(0, 5), (1, 0), (1, 1), (1, 5), (2, 3),
-        # (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1)]
-        for i in range(0, 20):
-            for j in range(0, 20):
-                if j == 1 or j == 19:
-                    walls.append((i, j))
-            if i == 1 or i == 19:
-                walls.append((i, j))
-        a.init_grid(20, 20, walls, (1, 1), (5, 5))
-        path = a.solve()
-        return path
-
-    def test_maze_no_walls(self):
-        a = AStar()
-        walls = ()
-        a.init_grid(6, 6, walls, (0, 0), (5, 5))
-        path = a.solve()
-        return len(path) == 11
-
-    def test_maze_no_solution(self):
-        a = AStar()
-        walls = ((0, 5), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
-                 (2, 3), (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1))
-        a.init_grid(6, 6, walls, (0, 0), (5, 5))
-        return a.solve()
-
-
-if __name__ == '__main__':
-    test = Test()
-    print(test.test_maze())

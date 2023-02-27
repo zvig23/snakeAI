@@ -21,7 +21,8 @@ class QLearning:
         self.lrn_rate = 0.35
         self.max_epochs = 150
         self.walls = walls
-        self.init_board()
+        self.expanded = 0
+        self.generated = 0
 
     def init_board(self):
         # walls
@@ -98,22 +99,28 @@ class QLearning:
         # right
         if is_valid_move(x + 1, y) and (x + 1, y) not in self.walls and self.Q[x + 1][y] > max_utility and (
         x + 1, y) not in path:
+            self.expanded += 1
             ans = (x + 1, y)
             max_utility = self.Q[x + 1][y]
         # left
         if is_valid_move(x - 1, y) and (x - 1, y) not in self.walls and self.Q[x - 1][y] > max_utility and (
         x - 1, y) not in path:
+            self.expanded += 1
             ans = (x - 1, y)
             max_utility = self.Q[x - 1][y]
         # up
         if is_valid_move(x, y + 1) and (x, y + 1) not in self.walls and self.Q[x][y + 1] > max_utility and (
         x, y + 1) not in path:
+            self.expanded += 1
             ans = (x, y + 1)
             max_utility = self.Q[x][y + 1]
         # down
         if is_valid_move(x, y - 1) and (x, y - 1) not in self.walls and self.Q[x][y - 1] > max_utility and (
         x, y - 1) not in path:
+            self.expanded += 1
             ans = (x, y - 1)
+
+        self.generated += 1
 
         if ans == state:
             if (x + 1, y) not in self.walls and (x + 1, y) not in path:
@@ -129,6 +136,7 @@ class QLearning:
     def get_path(self):
         path = []
         curr_state = self.start
+        self.init_board()
         while curr_state != self.goal and curr_state:
             next_state = self.get_next_move(curr_state, path)
             if next_state not in path:

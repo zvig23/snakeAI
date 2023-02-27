@@ -23,6 +23,12 @@ def q_learing_play(instance):
     Game.start_game("q_learning")
 
 '''
+function to start the game as Ai using Q learning machine
+'''
+def bfs_play(instance):
+    Game.start_game("bfs")
+
+'''
 function to start the game as user play
 '''
 def human_play(instance):
@@ -51,6 +57,13 @@ class MyGrid(GridLayout):
         self.submit.bind(on_press=q_learing_play)
         self.add_widget(self.submit)
 
+        self.submit = Button(text="BFS play", font_size=40)
+        self.submit.bind(on_press=bfs_play)
+        self.add_widget(self.submit)
+
+        self.submit = Button(text="AI-IDAstar play", font_size=40)
+        self.submit.bind(on_press=bfs_play)
+        self.add_widget(self.submit)
         # ------------------------------------------------------
 
 
@@ -60,3 +73,5 @@ if __name__ == "__main__":
     Config.set('graphics', 'width', '600')
     Config.set('graphics', 'height', '600')
     MyApp().run()
+    # for _ in range(10):
+    #     Game.start_game("bfs")

@@ -1,4 +1,8 @@
 import random
+import time
+from pathlib import Path
+
+import pandas as pd
 import pygame
 
 from autoPlayer import AutoPlayer
@@ -6,6 +10,15 @@ from autoPlayer import AutoPlayer
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from sys import exit
+
+
+global results
+global game_id
+global curr_score
+
+results = pd.DataFrame(columns=["timestamp", "time to calculate", "generated nodes", "expanded nodes", "score"])
+game_id = time.time()
+curr_score = 0
 
 
 class Cube(object):
@@ -119,7 +132,7 @@ class Snake(object):
             self.dirny = 1
             self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
         else:
-            print("NONE")
+            print("Im gonna die")
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -234,6 +247,9 @@ def set_snake_body_as_walls():
 
 
 def connect_ai_a_start():
+    global curr_score
+    global game_id
+    global results
     body_walls = set_snake_body_as_walls()
     start = body_walls[0]
     target = apple.pos
@@ -241,14 +257,23 @@ def connect_ai_a_start():
     body_walls = body_walls[1:]
     body_walls.extend(board_walls)
     ap.init_board(body_walls, target, start)
+    calc_time = time.time()
     move_pos = ap.find_next_move_a_star()
+    if (curr_score == 0) or (curr_score != len(body_walls)):
+        if move_pos != None:
+            curr_score = len(body_walls)
+            row = ["Astar", time.time() - calc_time, ap.generated, ap.expnaded, curr_score-80]
+            results.loc[len(results.index)] = row
 
     if move_pos is not None:
         return move_pos
 
+
 '''
 conncet to q_learning AI and get path 
 '''
+
+
 def connect_ai():
     move_pos = ap.find_next_step()
     if move_pos is not None:
@@ -264,9 +289,71 @@ def set_board_walls():
         board_walls.append((i, 19))
     return board_walls
 
+
+'''
+run the game as BFS player 
+'''
+def run_bfs_game():
+    global width, rows, s, apple, board_walls, ap
+    width = 500
+    rows = 20
+    board_walls = set_board_walls()
+    win = pygame.display.set_mode((width, width))
+    s = Snake((255, 0, 0), (10, 10))
+    s.reset((10, 10))
+
+    apple = Cube(random_snack(rows, s), color=(0, 255, 0))
+    flag = True
+    clock = pygame.time.Clock()
+    player = "A_star"
+    while flag:
+        pygame.time.delay(25)
+        clock.tick(10)
+        s.move(connect_bfs_start())
+
+        if s.body[0].pos == apple.pos:
+            s.add_cube()
+            apple = Cube(random_snack(rows, s), color=(0, 255, 0))
+
+        if check_for_end_game(s, player):
+            break
+        else:
+            redraw_window(win)
+    global results
+    filepath = Path('C:/Users/dvirl/PycharmProjects/snakeAI/results BFS/BFS ' + str(time.time())[0:12] + ".csv")
+    results.to_csv(filepath)
+    pygame.quit()
+    # exit()
+
+def connect_bfs_start():
+    global curr_score
+    global game_id
+    global results
+    body_walls = set_snake_body_as_walls()
+    start = body_walls[0]
+    target = apple.pos
+    ap = AutoPlayer()
+    body_walls = body_walls[1:]
+    body_walls.extend(board_walls)
+    ap.init_board(body_walls, target, start)
+    calc_time = time.time()
+    move_pos = ap.find_next_move_bfs()
+    if (curr_score == 0) or (curr_score != len(body_walls)):
+        if move_pos != None:
+            curr_score = len(body_walls)
+            row = ["BFS", time.time() - calc_time, ap.generated, ap.expnaded, curr_score-80]
+            results.loc[len(results.index)] = row
+
+    if move_pos is not None:
+        return move_pos
+
+
+
 '''
 run the game as A-star AI player 
 '''
+
+
 def run_a_star_game():
     global width, rows, s, apple, board_walls, ap
     width = 500
@@ -293,15 +380,23 @@ def run_a_star_game():
             break
         else:
             redraw_window(win)
-
+    global results
+    filepath = Path('C:/Users/dvirl/PycharmProjects/snakeAI/results Astar/Astar ' + str(time.time())[0:12] + ".csv")
+    results.to_csv(filepath)
     pygame.quit()
-    #exit()
+    # exit()
+
 
 '''
 run the game as q_learning AI machine
 '''
+
+
 def run_q_learning_game():
     global width, rows, s, apple, board_walls, ap
+    global curr_score
+    global game_id
+    global results
     width = 500
     rows = 20
     board_walls = set_board_walls()
@@ -320,8 +415,13 @@ def run_q_learning_game():
     body_walls = body_walls[1:]
     body_walls.extend(board_walls)
     ap.init_board(body_walls, target, start)
+    calc_time = time.time()
     ap.connect_q_learning()
-    player = "Q_learning"
+    player = "results Q_learning"
+    if (curr_score == 0) or (curr_score != len(body_walls)):
+        curr_score = len(body_walls)
+        row = ["results Q_learning", time.time() - calc_time, 400, 400, curr_score]
+        results.loc[len(results.index)] = row
 
     while flag:
         pygame.time.delay(25)
@@ -338,18 +438,29 @@ def run_q_learning_game():
             body_walls = body_walls[1:]
             body_walls.extend(board_walls)
             ap.init_board(body_walls, target, start)
+            calc_time = time.time()
             ap.connect_q_learning()
+            if (curr_score == 0) or (curr_score != len(body_walls)):
+                curr_score = len(body_walls)
+                row = ["results Q_learning", time.time() - calc_time, 400-len(s.body), len(ap.bestPath)*4, curr_score-80]
+                results.loc[len(results.index)] = row
 
         if check_for_end_game(s, player):
             break
         else:
             redraw_window(win)
+    filepath = Path('C:/Users/dvirl/PycharmProjects/snakeAI/results Q_learning/Q_learning ' + str(time.time())[0:12] + ".csv")
+    results.to_csv(filepath)
+    results.truncate()
     pygame.quit()
-    #exit()
+    # exit()
+
 
 '''
 run the game as human player 
 '''
+
+
 def run_human_game():
     global width, rows, s, apple, board_walls, ap
     width = 500
@@ -376,11 +487,14 @@ def run_human_game():
         else:
             redraw_window(win)
     pygame.quit()
-    #exit()
+    # exit()
+
 
 '''
 pop up windwos with the results
 '''
+
+
 def show_result(score, player):
     show_content = player + ' score :' + str(score)
     pop_win = Popup(title="score", size_hint=(None, None), size=(400, 400))
@@ -393,6 +507,8 @@ def show_result(score, player):
 check if the game is ended 
 and call the function that pop up windwos with the results
 '''
+
+
 def check_for_end_game(s, player):
     if s.body[0].pos[0] == 0 or s.body[0].pos[1] == 0:
         print('Score: ', len(s.body))
@@ -415,14 +531,19 @@ def check_for_end_game(s, player):
             return True
     return False
 
+
 '''
 recive wich game to start 
 and call the right function
 '''
+
+
 def start_game(game):
     if game == "a_star":
         run_a_star_game()
     elif game == "q_learning":
         run_q_learning_game()
+    elif game == "bfs":
+        run_bfs_game()
     elif game == "human":
         run_human_game()
